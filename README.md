@@ -16,7 +16,7 @@ Le schede vengono salvate in localStorage, nel browser e dispositivo utilizzati.
 - PF massimi: `livello * (6 + modificatore HP)`.
 - Save, competenza, abilità e mosse rimangono manuali.
 
-Tillo: livello 9, statistiche 14 / 13 / 14 / 16 / 12 / 8 → CA 12, iniziativa -1, PF massimi 72. Il PDF di esempio contiene altri calcoli nelle note, conservate come contenuto; non modificano le regole dell'app.
+Tillo: livello 9, statistiche 14 / 13 / 14 / 16 / 12 / 8 → CA 12, iniziativa -1, PF massimi 72. Il PDF di esempio contiene altri calcoli nelle note; non modificano le regole dell'app. Le note di campagna e l'inventario personali sono stati omessi dall'esempio pubblico.
 
 ## Sviluppo
 

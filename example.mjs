@@ -1,4 +1,4 @@
-// Data extracted from the user-provided example PDF. Derived values follow the requested rules.
+// Public example based on the supplied PDF; private campaign notes and inventory omitted.
 export const TILLO_EXAMPLE = {
   "nickname": "Tillo",
   "pokemon": "Torterra",
@@ -17,7 +17,7 @@ export const TILLO_EXAMPLE = {
   "save": "+5",
   "friendship": 0,
   "proficiency": 4,
-  "power": "Guscioscudo - permette di non subire danni critici (danni normali si)\n \ndadi vita 4d10 su 8d10",
+  "power": "Guscioscudo - permette di non subire danni critici (danni normali si)",
   "abilities": [
     "Aiutare (hp+c): +6",
     "Curare (a.s.+c): +7",
@@ -64,8 +64,8 @@ export const TILLO_EXAMPLE = {
       "notes": "crit 19/20 ad area "
     }
   ],
-  "appearance": "CA = 10 + C + D\nIniziativa = C + V\nSave = C + D.S.\n \n+1 a Difesa\n+2 a Difesa Speciale\n \nvulpi vulpix\nmimi - mimikyu - silvia\nstrisciolo - dratini - togno\nnerfiam - Torracat - tyo\n \npipu - logistico missioni koala\n \nlvl +: 6+hp , forse mossa e 1 abilità\n \nRimosse: \n-Azione +4 2d6+1 normale\nmaledizione atk difesa +1 velocità -1\nmorso: 2d8+2 normale\n-Assorbimento +6 2d4+3 speciale 2d4+3 danni e metà mi curo (difetto)\n-Ritirata acqua aumenta la difesa\n-Parassiseme erba all'inizio del turno dell'avversario fa 2d4danni e mi curo di 2d4 senza statistica (dura finché non viene sostituito)\n-Megassorbimento: att sp 2d6+3 danni e metà mi curo\n-Sintesi: 2d12+vita hp curati a me stesso\n-sgranocchio: 1d8 fisico buio riduce la difesa\n \n-solarraggio 1d12 primo turno di ricarica altrimenti con un giornata di sole\n-battiterra: fisico terra 1d6 colpisce tutti anche alleati\n-fangobomba: speciale veleno 1d8+1 e può causare avvelenamento \n-morso 1d8 buio fisico  (quindi si basa su attacco e difesa)\n-\n \n \n \nzappa di vetro\narpa della roccia - rotta\nkurozul pokemon che lancia laser\nbiroul\nvexel - cattivo\n \n \n",
-  "equipment": "0 bacca arancio 2d4+2\n1 bacca mistero\n1 bandana blu orsogufo\n1 succo bacca \n \n1mt fossa - 1d8 attacchi il secondo turno fisico\n1mt corposcontro\n1mt solarraggio\n1mt 78 battiterra\n1mt 83 cuordileone \n1mt\n1 pelo nero e rosso\n1 pelo bianco e rosso (zorua di izui?)\n \nturtwig di vetro alto 2 pollici (costato 1 moneta) \n \narpa delle nubi (falso)corrotta (dite spezzate) (potenzia le mosse buio)\n \nStrumento sacro: bastone di fuoco +2 tpc +2 danni fuoco\n \n1/4 di corona di re magikarp",
+  "appearance": "",
+  "equipment": "",
   "currency": [
     "",
     "",
