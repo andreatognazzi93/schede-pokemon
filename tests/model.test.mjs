@@ -40,8 +40,8 @@ test('odd negative stat differences round down, including 9 → −1 and 7 → �
   });
   assert.deepEqual(calculate(character), {
     modifiers: { hp: -1, attack: -2, defense: 0, specialAttack: 1, specialDefense: -5, speed: -1 },
-    initiative: -1,
-    armorClass: 10,
+    initiative: 1,
+    armorClass: 12,
     maxHP: 5,
     abilityModifiers: Array(14).fill(null),
   });
@@ -66,6 +66,18 @@ test('selected ability modifiers combine the chosen stat and proficiency and rec
   assert.equal(calculate(character).abilityModifiers[0], null);
 });
 
+test('armor class and initiative add proficiency to their stat modifiers', () => {
+  const character = createCharacter({
+    proficiency: 4,
+    stats: { defense: 15, speed: 9 },
+  });
+  assert.equal(calculate(character).armorClass, 16);
+  assert.equal(calculate(character).initiative, 3);
+  character.proficiency = 5;
+  assert.equal(calculate(character).armorClass, 17);
+  assert.equal(calculate(character).initiative, 4);
+});
+
 test('ability stat selection accepts only exact stat keys and has exactly 14 slots', () => {
   const selection = ['HP', ' hp', 'attack ', 1, null, {}, 'speed', 'specialAttack'];
   const character = normalizeCharacter({ abilityStats: selection });
@@ -81,8 +93,8 @@ test('ability stat selection accepts only exact stat keys and has exactly 14 slo
 test('level and HP changes recalculate maximum HP; current HP stays independent', () => {
   const character = createCharacter({ level: 9, currentHP: 37, stats: { hp: 14, defense: 14, speed: 8 } });
   assert.equal(calculate(character).maxHP, 72);
-  assert.equal(calculate(character).armorClass, 12);
-  assert.equal(calculate(character).initiative, -1);
+  assert.equal(calculate(character).armorClass, 14);
+  assert.equal(calculate(character).initiative, 1);
   character.level = 10;
   assert.equal(calculate(character).maxHP, 80);
   character.stats.hp = 15;
@@ -95,8 +107,8 @@ test('level and HP changes recalculate maximum HP; current HP stays independent'
 test('calculation applies the formula exactly, without clamping its result', () => {
   const result = calculate({ level: 3, stats: { hp: -20, defense: -20, speed: -20 } });
   assert.equal(result.maxHP, -27);
-  assert.equal(result.armorClass, -5);
-  assert.equal(result.initiative, -15);
+  assert.equal(result.armorClass, -3);
+  assert.equal(result.initiative, -13);
 });
 
 test('invalid stat and numerical inputs become safe defaults', () => {
