@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#243e35">
+  <meta name="description" content="Schede personaggio Pokémon D&D in italiano. Calcoli automatici, salvataggio e condivisione tramite link.">
+  <title>Schede Pokémon · Diario d'avventura</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23243e35'/%3E%3Cpath d='M18 43C14 24 29 14 48 16c-1 21-14 34-30 27Z' fill='%23d6dfaa'/%3E%3Cpath d='m17 48 23-23' stroke='%23243e35' stroke-width='4'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div id="app"></div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <dialog id="share-dialog" aria-labelledby="share-title">
+    <form method="dialog"><button class="close-button" aria-label="Chiudi">×</button></form>
+    <div class="dialog-symbol" aria-hidden="true">↗</div>
+    <h2 id="share-title">Porta la scheda al tavolo.</h2>
+    <p>Chiunque abbia questo link può leggere una copia della scheda, senza registrarsi.</p>
+    <label class="field">Link della scheda<input id="share-url" readonly spellcheck="false"></label>
+    <button class="button primary" id="copy-share">Copia link</button>
+    <p class="small-note">Il link conserva i valori di adesso. Dopo una modifica, crea un nuovo link per condividere la versione aggiornata.</p>
+  </dialog>
+  <dialog id="confirm-dialog" aria-labelledby="confirm-title">
+    <h2 id="confirm-title">Eliminare questa scheda?</h2>
+    <p>La scheda verrà rimossa da questo browser. Le copie già condivise resteranno disponibili.</p>
+    <div class="dialog-actions"><button class="button" data-action="cancel-delete">Annulla</button><button class="button danger" data-action="confirm-delete">Elimina scheda</button></div>
+  </dialog>
+  <input type="file" id="import-file" accept="application/json,.json" hidden>
+  <div id="print-sheet"></div>
+  <noscript>Attiva JavaScript per compilare la scheda e usare i calcoli automatici.</noscript>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>
