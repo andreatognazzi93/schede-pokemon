@@ -139,7 +139,7 @@ export function calculate(character) {
   return {
     modifiers,
     initiative: proficiency + modifiers.speed,
-    armorClass: 10 + proficiency + modifiers.defense,
+    armorClass: 8 + proficiency + modifiers.defense,
     maxHP: ruleNumber(character?.level, 1) * (6 + modifiers.hp),
     abilityModifiers: Array.from({ length: 14 }, (_, index) => {
       const selected = character?.abilityStats?.[index];
