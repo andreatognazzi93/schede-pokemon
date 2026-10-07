@@ -21,13 +21,16 @@ test('blank characters have six Italian stats and independent fixed-size arrays'
   assert.equal(STAT_LABELS.specialAttack, 'Attacco SP');
   assert.equal(STAT_LABELS.speed, 'Velocità');
   assert.equal(a.abilities.length, 14);
+  assert.deepEqual(a.abilityStats, Array(14).fill(''));
   assert.equal(a.moves.length, 4);
   assert.equal(a.currency.length, 5);
   assert.equal(a.power, '');
   assert.notEqual(a.id, b.id);
   a.stats.hp = 20;
+  a.abilityStats[0] = 'hp';
   a.moves[0].name = 'Azione';
   assert.equal(b.stats.hp, 10);
+  assert.equal(b.abilityStats[0], '');
   assert.equal(b.moves[0].name, '');
 });
 
@@ -40,10 +43,39 @@ test('odd negative stat differences round down, including 9 → −1 and 7 → �
     initiative: -1,
     armorClass: 10,
     maxHP: 5,
+    abilityModifiers: Array(14).fill(null),
   });
   assert.equal(formatModifier(-2), '-2');
   assert.equal(formatModifier(0), '+0');
   assert.equal(formatModifier(3), '+3');
+});
+
+test('selected ability modifiers combine the chosen stat and proficiency and recalculate', () => {
+  const character = createCharacter({
+    proficiency: 3,
+    stats: { hp: 9, attack: 7, speed: 14 },
+    abilityStats: ['hp', 'attack', 'speed'],
+  });
+  assert.deepEqual(calculate(character).abilityModifiers.slice(0, 4), [2, 1, 5, null]);
+  character.stats.hp = 11;
+  character.proficiency = 4;
+  assert.deepEqual(calculate(character).abilityModifiers.slice(0, 4), [4, 2, 6, null]);
+  character.abilityStats[0] = 'defense';
+  assert.equal(calculate(character).abilityModifiers[0], 4);
+  character.abilityStats[0] = '';
+  assert.equal(calculate(character).abilityModifiers[0], null);
+});
+
+test('ability stat selection accepts only exact stat keys and has exactly 14 slots', () => {
+  const selection = ['HP', ' hp', 'attack ', 1, null, {}, 'speed', 'specialAttack'];
+  const character = normalizeCharacter({ abilityStats: selection });
+  assert.deepEqual(character.abilityStats, [
+    '', '', '', '', '', '', 'speed', 'specialAttack', '', '', '', '', '', '',
+  ]);
+  assert.equal(calculate(character).abilityModifiers[6], 2);
+  assert.equal(calculate(character).abilityModifiers[7], 2);
+  assert.equal(normalizeCharacter({ abilityStats: 'speed' }).abilityStats[0], '');
+  assert.equal(normalizeCharacter({ abilityStats: Array(20).fill('hp') }).abilityStats.length, 14);
 });
 
 test('level and HP changes recalculate maximum HP; current HP stays independent', () => {
@@ -103,7 +135,7 @@ test('normalization bounds text, removes controls, and never invokes object acce
   Object.defineProperty(source, 'pokemon', { get() { throw new Error('Unsafe accessor'); } });
   source.stats = {};
   Object.defineProperty(source.stats, 'hp', { get() { throw new Error('Unsafe accessor'); } });
-  for (const key of ['moves', 'abilities', 'currency']) {
+  for (const key of ['moves', 'abilities', 'abilityStats', 'currency']) {
     source[key] = [];
     Object.defineProperty(source[key], 0, { get() { throw new Error('Unsafe accessor'); } });
   }
@@ -114,6 +146,7 @@ test('normalization bounds text, removes controls, and never invokes object acce
   assert.equal(character.stats.hp, 10);
   assert.equal(character.moves[0].name, '');
   assert.equal(character.abilities[0], '');
+  assert.equal(character.abilityStats[0], '');
   assert.equal(character.currency[0], 0);
 });
 
@@ -142,6 +175,7 @@ test('Unicode character snapshot round-trips every user field and gets a new loc
     currentHP: 37, proficiency: 4, save: '+5',
     power: 'È già pronto!\n能力 ✨', appearance: 'Un Pokémon dalle foglie verdi.',
     equipment: 'Pozione ×2\nCorda', type: 'Erba / Terra',
+    abilityStats: ['speed', 'specialDefense', '', 'hp'],
     moves: [{ name: 'Gigassorbimento', attack: '+7', damage: '3d6', type: 'Erba', notes: 'Recupera metà dei danni.' }],
   });
   const encoded = await encodeCharacter(source);
@@ -153,7 +187,9 @@ test('Unicode character snapshot round-trips every user field and gets a new loc
 
 test('plain UTF-8 snapshots and unprefixed legacy snapshots decode', async () => {
   const input = { nickname: 'Pokémon 🌿', equipment: 'Pietra ×3' };
-  assert.equal((await decodeCharacter(plainSnapshot(input))).nickname, input.nickname);
+  const prefixed = await decodeCharacter(plainSnapshot(input));
+  assert.equal(prefixed.nickname, input.nickname);
+  assert.deepEqual(prefixed.abilityStats, Array(14).fill(''));
   assert.equal((await decodeCharacter(plainSnapshot(input, ''))).equipment, input.equipment);
 });
 

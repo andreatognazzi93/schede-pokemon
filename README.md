@@ -14,7 +14,8 @@ Le schede vengono salvate in localStorage, nel browser e dispositivo utilizzati.
 - Iniziativa: modificatore Velocità.
 - CA: `10 + modificatore Difesa`.
 - PF massimi: `livello * (6 + modificatore HP)`.
-- Save, competenza, abilità e mosse rimangono manuali.
+- Bonus di ogni abilità con caratteristica selezionata: `modificatore caratteristica + bonus di competenza`.
+- Save, nomi delle abilità, valore della competenza e mosse si compilano manualmente.
 
 Tillo: livello 9, statistiche 14 / 13 / 14 / 16 / 12 / 8 → CA 12, iniziativa -1, PF massimi 72. Il PDF di esempio contiene altri calcoli nelle note; non modificano le regole dell'app. Le note di campagna e l'inventario personali sono stati omessi dall'esempio pubblico.
 

@@ -71,6 +71,7 @@ export function normalizeCharacter(input) {
   const get = (key) => ownValue(input, key);
   const rawStats = get('stats');
   const rawAbilities = get('abilities');
+  const rawAbilityStats = get('abilityStats');
   const rawMoves = get('moves');
   const rawCurrency = get('currency');
   const stats = Object.fromEntries(STAT_KEYS.map((key) => [
@@ -102,6 +103,10 @@ export function normalizeCharacter(input) {
     abilities: Array.from({ length: 14 }, (_, index) => safeText(
       arrayValue(rawAbilities, index), 500,
     )),
+    abilityStats: Array.from({ length: 14 }, (_, index) => {
+      const selected = arrayValue(rawAbilityStats, index);
+      return typeof selected === 'string' && STAT_KEYS.includes(selected) ? selected : '';
+    }),
     moves,
     appearance: safeText(get('appearance'), 6000),
     currency: Array.from({ length: 5 }, (_, index) => safeScalar(
@@ -130,11 +135,16 @@ export function calculate(character) {
   const modifiers = Object.fromEntries(STAT_KEYS.map((key) => [
     key, Math.floor((ruleNumber(character?.stats?.[key], 10) - 10) / 2),
   ]));
+  const proficiency = ruleNumber(character?.proficiency, 2);
   return {
     modifiers,
     initiative: modifiers.speed,
     armorClass: 10 + modifiers.defense,
     maxHP: ruleNumber(character?.level, 1) * (6 + modifiers.hp),
+    abilityModifiers: Array.from({ length: 14 }, (_, index) => {
+      const selected = character?.abilityStats?.[index];
+      return STAT_KEYS.includes(selected) ? modifiers[selected] + proficiency : null;
+    }),
   };
 }
 
