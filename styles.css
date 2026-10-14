@@ -16,3 +16,17 @@
 .ability-row select:focus{border-color:var(--accent)}
 .ability-row select:disabled{background:var(--base);color:var(--muted)}
 .ability-bonus{grid-column:4;grid-row:2;font-size:12px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+
+/* The affinities sit between combat values and the three sheet columns. */
+.combat{margin-bottom:0}
+.types{border-bottom:1px solid var(--line)}
+.sheet-body{border-top:0}
+.move-properties{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}
+.move-properties .field select{width:100%;min-width:0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;padding:4px 16px 5px 0;font-size:12px;letter-spacing:0;text-transform:none;font-weight:400;outline:none;color:var(--ink)}
+.move-properties .field select:focus{border-color:var(--accent)}
+.move-properties .field select:disabled{opacity:1;color:var(--ink)}
+.move-total{margin:12px 0 0 29px;padding:8px 11px;border:1px solid #dce2ce;border-radius:7px;background:var(--soft);display:flex;justify-content:space-between;align-items:baseline;gap:12px;min-width:0}
+.move-total span{color:#67775d;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+.move-total output{font-family:Georgia,"Times New Roman",serif;font-size:16px;font-weight:700;overflow-wrap:anywhere;text-align:right}
+@media(max-width:540px){.move-total{align-items:flex-start}.move-total output{font-size:15px}}
+@media print{.print-facts{grid-template-columns:repeat(4,1fr)}.print-combat{margin-bottom:8px}.print-type{margin:0 0 15px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;border-top:0;border-bottom:1px solid #c7cebc;padding:0 0 8px}.print-type span{overflow-wrap:anywhere}}

@@ -84,6 +84,7 @@ export function normalizeCharacter(input) {
       attack: safeText(ownValue(move, 'attack'), 120),
       damage: safeText(ownValue(move, 'damage'), 120),
       type: safeText(ownValue(move, 'type'), 80),
+      stat: STAT_KEYS.includes(ownValue(move, 'stat')) ? ownValue(move, 'stat') : '',
       notes: safeText(ownValue(move, 'notes'), 1500),
     };
   });
@@ -145,12 +146,23 @@ export function calculate(character) {
       const selected = character?.abilityStats?.[index];
       return STAT_KEYS.includes(selected) ? modifiers[selected] + proficiency : null;
     }),
+    moveDamageModifiers: Array.from({ length: 4 }, (_, index) => {
+      const selected = character?.moves?.[index]?.stat;
+      return STAT_KEYS.includes(selected) ? modifiers[selected] : null;
+    }),
   };
 }
 
 export function formatModifier(value) {
   const number = ruleNumber(value, 0);
   return number >= 0 ? `+${number}` : `${number}`;
+}
+
+/** Display the entered dice/base alongside the selected stat modifier. */
+export function formatMoveDamage(base, modifier) {
+  const text = typeof base === 'string' ? base.trim() : '';
+  if (typeof modifier !== 'number' || !Number.isFinite(modifier)) return text || '—';
+  return `${text}${formatModifier(modifier)}`;
 }
 
 function toBase64Url(bytes) {

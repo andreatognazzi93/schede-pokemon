@@ -15,7 +15,12 @@ Le schede vengono salvate in localStorage, nel browser e dispositivo utilizzati.
 - CA: `8 + competenza + modificatore Difesa`.
 - PF massimi: `livello * (6 + modificatore HP)`.
 - Bonus di ogni abilità con caratteristica selezionata: `modificatore caratteristica + bonus di competenza`.
-- Save, nomi delle abilità, valore della competenza e mosse si compilano manualmente.
+- Ogni mossa può scegliere uno dei 18 tipi Pokémon e una caratteristica per i danni. Il campo **Dadi / base** resta modificabile; il risultato mostrato è `dadi/base + modificatore della caratteristica scelta`, senza competenza. Il tipo non cambia il calcolo.
+- Save, nomi delle abilità, valore della competenza e Attacco/Save delle mosse si compilano manualmente.
+
+I nomi dei 18 tipi seguono il [Pokédex italiano ufficiale](https://www.pokemon.com/it/pokedex).
+
+Le mosse delle schede già salvate mantengono i vecchi danni e non ricevono un modificatore finché non scegli una caratteristica. Se i vecchi danni contengono già il modificatore, rimuovilo dal campo **Dadi / base** prima di selezionarla.
 
 Tillo: livello 9, competenza 4, statistiche 14 / 13 / 14 / 16 / 12 / 8 → CA 14, iniziativa +3, PF massimi 72. Il PDF di esempio contiene altri calcoli nelle note; non modificano le regole dell'app. Le note di campagna e l'inventario personali sono stati omessi dall'esempio pubblico.
 

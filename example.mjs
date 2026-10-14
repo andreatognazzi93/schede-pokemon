@@ -38,8 +38,9 @@ export const TILLO_EXAMPLE = {
     {
       "name": "Fossa",
       "attack": "+5",
-      "damage": "3d8+1",
-      "type": "fisico",
+      "damage": "3d8",
+      "type": "Terra",
+      "stat": "attack",
       "notes": "attacco al secondo turno"
     },
     {
@@ -59,8 +60,9 @@ export const TILLO_EXAMPLE = {
     {
       "name": "Foglielama",
       "attack": "+5",
-      "damage": "3d8+1",
+      "damage": "3d8",
       "type": "Erba",
+      "stat": "attack",
       "notes": "crit 19/20 ad area "
     }
   ],

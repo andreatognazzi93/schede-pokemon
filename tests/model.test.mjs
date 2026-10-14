@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   STAT_KEYS, STAT_LABELS, createCharacter, normalizeCharacter,
-  calculate, formatModifier, encodeCharacter, decodeCharacter,
+  calculate, formatModifier, formatMoveDamage, encodeCharacter, decodeCharacter,
 } from '../model.mjs';
 
 function withoutId(character) {
@@ -23,15 +23,18 @@ test('blank characters have six Italian stats and independent fixed-size arrays'
   assert.equal(a.abilities.length, 14);
   assert.deepEqual(a.abilityStats, Array(14).fill(''));
   assert.equal(a.moves.length, 4);
+  assert.deepEqual(a.moves.map((move) => move.stat), Array(4).fill(''));
   assert.equal(a.currency.length, 5);
   assert.equal(a.power, '');
   assert.notEqual(a.id, b.id);
   a.stats.hp = 20;
   a.abilityStats[0] = 'hp';
   a.moves[0].name = 'Azione';
+  a.moves[0].stat = 'attack';
   assert.equal(b.stats.hp, 10);
   assert.equal(b.abilityStats[0], '');
   assert.equal(b.moves[0].name, '');
+  assert.equal(b.moves[0].stat, '');
 });
 
 test('odd negative stat differences round down, including 9 → −1 and 7 → −2', () => {
@@ -44,6 +47,7 @@ test('odd negative stat differences round down, including 9 → −1 and 7 → �
     armorClass: 10,
     maxHP: 5,
     abilityModifiers: Array(14).fill(null),
+    moveDamageModifiers: Array(4).fill(null),
   });
   assert.equal(formatModifier(-2), '-2');
   assert.equal(formatModifier(0), '+0');
@@ -88,6 +92,47 @@ test('ability stat selection accepts only exact stat keys and has exactly 14 slo
   assert.equal(calculate(character).abilityModifiers[7], 2);
   assert.equal(normalizeCharacter({ abilityStats: 'speed' }).abilityStats[0], '');
   assert.equal(normalizeCharacter({ abilityStats: Array(20).fill('hp') }).abilityStats.length, 14);
+});
+
+test('move damage modifiers use only the selected stat and recalculate without proficiency', () => {
+  const character = createCharacter({
+    proficiency: 5,
+    stats: { attack: 13, specialAttack: 8, defense: 16 },
+    moves: [
+      { name: 'Graffio', damage: '1d6', stat: 'attack' },
+      { name: 'Raggio', damage: '2d8', stat: 'specialAttack' },
+      { name: 'Scudo', stat: 'defense' },
+    ],
+  });
+  assert.deepEqual(calculate(character).moveDamageModifiers, [1, -1, 3, null]);
+  character.proficiency = 20;
+  assert.deepEqual(calculate(character).moveDamageModifiers, [1, -1, 3, null]);
+  character.stats.attack = 16;
+  character.moves[1].stat = '';
+  assert.deepEqual(calculate(character).moveDamageModifiers, [3, null, 3, null]);
+  assert.equal(formatMoveDamage(character.moves[0].damage, calculate(character).moveDamageModifiers[0]), '1d6+3');
+});
+
+test('move damage formatting preserves the entered base and shows signed modifiers', () => {
+  assert.equal(formatMoveDamage('3d8', 1), '3d8+1');
+  assert.equal(formatMoveDamage('2d6', -2), '2d6-2');
+  assert.equal(formatMoveDamage(' 1d8 + 3 ', 0), '1d8 + 3+0');
+  assert.equal(formatMoveDamage('', 4), '+4');
+  assert.equal(formatMoveDamage('', 0), '+0');
+  assert.equal(formatMoveDamage('3d8', null), '3d8');
+  assert.equal(formatMoveDamage('', null), '—');
+});
+
+test('move stat selection accepts only exact stat keys and has exactly four slots', () => {
+  const character = normalizeCharacter({
+    moves: [
+      { stat: 'HP' }, { stat: ' specialAttack' }, { stat: 'specialDefense' },
+      { stat: 'speed' }, { stat: 'attack' },
+    ],
+  });
+  assert.deepEqual(character.moves.map((move) => move.stat), ['', '', 'specialDefense', 'speed']);
+  assert.deepEqual(calculate(character).moveDamageModifiers, [null, null, 0, 0]);
+  assert.equal(normalizeCharacter({ moves: [{ stat: 42 }] }).moves[0].stat, '');
 });
 
 test('level and HP changes recalculate maximum HP; current HP stays independent', () => {
@@ -163,7 +208,7 @@ test('normalization bounds text, removes controls, and never invokes object acce
 });
 
 test('all move fields, multiline power, currencies, and ability lines survive normalization', () => {
-  const move = { name: 'Foglia', attack: '+4', damage: '2d6 + 3', type: 'Erba', notes: 'Portata 10 m\nUna volta per turno.' };
+  const move = { name: 'Foglia', attack: '+4', damage: '2d6 + 3', type: 'Erba', stat: 'specialAttack', notes: 'Portata 10 m\nUna volta per turno.' };
   const character = normalizeCharacter({
     moves: [move],
     power: 'Potere Pokémon\nUna descrizione.',
@@ -188,7 +233,7 @@ test('Unicode character snapshot round-trips every user field and gets a new loc
     power: 'È già pronto!\n能力 ✨', appearance: 'Un Pokémon dalle foglie verdi.',
     equipment: 'Pozione ×2\nCorda', type: 'Erba / Terra',
     abilityStats: ['speed', 'specialDefense', '', 'hp'],
-    moves: [{ name: 'Gigassorbimento', attack: '+7', damage: '3d6', type: 'Erba', notes: 'Recupera metà dei danni.' }],
+    moves: [{ name: 'Gigassorbimento', attack: '+7', damage: '3d6', type: 'Erba', stat: 'specialAttack', notes: 'Recupera metà dei danni.' }],
   });
   const encoded = await encodeCharacter(source);
   assert.match(encoded, /^[jz]1\.[A-Za-z0-9_-]+$/);
@@ -198,10 +243,12 @@ test('Unicode character snapshot round-trips every user field and gets a new loc
 });
 
 test('plain UTF-8 snapshots and unprefixed legacy snapshots decode', async () => {
-  const input = { nickname: 'Pokémon 🌿', equipment: 'Pietra ×3' };
+  const input = { nickname: 'Pokémon 🌿', equipment: 'Pietra ×3', moves: [{ name: 'Foglia', damage: '2d6' }] };
   const prefixed = await decodeCharacter(plainSnapshot(input));
   assert.equal(prefixed.nickname, input.nickname);
   assert.deepEqual(prefixed.abilityStats, Array(14).fill(''));
+  assert.equal(prefixed.moves[0].stat, '');
+  assert.equal(prefixed.moves[0].damage, '2d6');
   assert.equal((await decodeCharacter(plainSnapshot(input, ''))).equipment, input.equipment);
 });
 
